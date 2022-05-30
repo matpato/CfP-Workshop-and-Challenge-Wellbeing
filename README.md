@@ -35,7 +35,7 @@ a) With git clone:
 ```
 git clone git@github.com:matpato/CfP-Workshop-and-Challenge-Wellbeing.git
 
-cd CfP/
+cd CfP-Workshop-and-Challenge-Wellbeing/
 ```
 
 b) By retrieving directly the repository zip file 
