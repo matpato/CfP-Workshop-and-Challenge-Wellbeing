@@ -2,7 +2,7 @@
 
 
 <p align="center">
-<img src="https://lasigebiotm.github.io/RecSys.Scifi/assets/img/recommender-bg.jpg" width="50%" height="50%">
+<img src="https://github.com/matpato/CfP-Workshop-and-Challenge-Wellbeing/blob/main/img/wellbeing.png" height="50%">
 </p>
 
 
