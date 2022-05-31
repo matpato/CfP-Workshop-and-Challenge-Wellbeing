@@ -13,6 +13,11 @@ __pycache__/
 # C extensions
 *.so
 
+# Environments
+.env
+env
+cfp_wellbeing_isel
+
 # Distribution / packaging
 .Python
 build/
