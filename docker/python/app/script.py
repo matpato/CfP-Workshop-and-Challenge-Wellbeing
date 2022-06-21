@@ -201,12 +201,12 @@ print(
 
 
 startTrainIndex = 0
-endTrainIndex = 20000#len(procDataTrainHandcraftedHR.dataArray)
+endTrainIndex = len(procDataTrainHandcraftedHR.dataArray)
 
 trainDataset = procDataTrainHandcraftedHR.dataArray[startTrainIndex:endTrainIndex]
 
 clf = svm.SVC()
-experimentClassifier(clf, trainDataset[startTrainIndex:endTrainIndex], procDataTrainHandcraftedHR.labels[startTrainIndex:endTrainIndex])
+experimentClassifier(clf, trainDataset, procDataTrainHandcraftedHR.labels[startTrainIndex:endTrainIndex])
 
 
 
@@ -222,7 +222,7 @@ experimentClassifier(clf, trainDataset[startTrainIndex:endTrainIndex], procDataT
 #expected_labels = procDataTestHandcraftedHR.labels[startTestIndex:endTestIndex]
 
 
-# In[3]:
+# In[3] logging:
+logClassifer(clf)
 endTime = datetime.datetime.now().replace(microsecond=0)
 logWorkDuration(startTime,endTime)
-logClassifer(clf)
