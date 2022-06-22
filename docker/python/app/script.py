@@ -39,8 +39,10 @@ import pandas as pd
 import sys
 import numpy as np
 import sklearn.metrics as metrics
+import sklearn.tree as tree
 import sklearn.model_selection as model_selection
 from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 
 
 # In[2]:
@@ -106,7 +108,7 @@ def logWorkDuration(startTime,endTime):
     print(f"duration : {endTime.__sub__(startTime).__str__()}")
     print()
 
-def processDataset(smallSataset, featureStr, dataStr, removeNan=False):
+def processDataset(smallSataset, featureStr, dataStr, removeNan=False,flatten=True):
     nfeatures = len(smallSataset[featureStr][dataStr][0][0])
     n = len(smallSataset[featureStr][dataStr]) * \
         len(smallSataset[featureStr][dataStr][0])
@@ -120,18 +122,18 @@ def processDataset(smallSataset, featureStr, dataStr, removeNan=False):
             if not removeNan :
                 dataset_features[count, 0:nfeatures] = smallSataset[featureStr][dataStr][i][j]
                 dataset_labels[count] = smallSataset['labels'][i]
-                count = count + 1
             elif (np.sum(np.isnan(smallSataset[featureStr][dataStr][i][j])) == 0):
                 # nao considerar os nan
                 dataset_features[count,0:nfeatures] = smallSataset[featureStr][dataStr][i][j]
                 dataset_labels[count] = smallSataset['labels'][i]
-                count = count + 1
 
-    return ProcDataset(dataset_features[0:count],dataset_labels[0:count])
+            count = count + 1
+
+    return ProcDataset(dataset_features,dataset_labels)
 
 
-def experimentClassifier(clf,dataset, datasetLabels, nrOfIters=1):
-    sgkf = model_selection.StratifiedKFold(n_splits=4, shuffle=True)
+def experimentClassifier(clf,dataset, datasetLabels, nrOfIters=1,binarizeLabels=False):
+    sgkf = model_selection.StratifiedKFold(n_splits=5, shuffle=True)
 
     for trainIndexes, testIndexes in sgkf.split(dataset, datasetLabels):
         kfold_train_dataset = trainDataset[trainIndexes]
@@ -141,11 +143,32 @@ def experimentClassifier(clf,dataset, datasetLabels, nrOfIters=1):
 
         clf.fit(kfold_train_dataset, kfold_train_dataset_labels)
         kfold_predicted_labels = clf.predict(kfold_test_dataset)
-        logPredictionMetrics(kfold_test_dataset_labels, kfold_predicted_labels)
+
+        #Printing results
+        if binarizeLabels :
+            logPredictionMetrics(np.where(kfold_test_dataset_labels==0,0,1), np.where(kfold_predicted_labels==0,0,1))
+        else :
+            logPredictionMetrics(kfold_test_dataset_labels,kfold_predicted_labels)
 
         nrOfIters = nrOfIters-1
         if nrOfIters == 0:
             break
+
+
+def fitAndPredictClassifier(clf,trainDataset, trainDatasetLabels, testDataset, testDatasetLabels,binarizeLabels=True, printMetrics=False, saveOutputFile=True):
+
+    clf.fit(trainDataset, trainDatasetLabels)
+    predicted_labels = clf.predict(testDataset)
+
+    if binarizeLabels :
+        testDatasetLabels = np.where(testDatasetLabels==0,0,1)
+        predicted_labels = np.where(predicted_labels==0,0,1)
+
+    if printMetrics :
+        logPredictionMetrics(testDatasetLabels, predicted_labels)
+
+    if saveOutputFile :
+        np.savetxt('answer.txt',predicted_labels, fmt='%i')
 
 #     dict
 #         dictionary with dataset, with keys:
@@ -177,10 +200,6 @@ dataset_train = dataset['train']
 
 dataset_test = dataset['test']
 
-procDataTrainHandcraftedHR = processDataset(dataset_train, 'hand_crafted_features', 'ECG_features', removeNan=True)
-procDataTestHandcraftedHR = processDataset(dataset_test, 'hand_crafted_features', 'ECG_features', removeNan=True)
-
-
 
 # Now we have a DataFrame with the contents of the metadata file.
 
@@ -199,15 +218,36 @@ print(
 
 # In[17]:
 
+procDataTrainHandcraftedHR = processDataset(dataset_train, 'hand_crafted_features', 'ECG_features', removeNan=True)
+
+procDataTestHandcraftedHR = processDataset(dataset_test, 'hand_crafted_features', 'ECG_features', removeNan=True)
+
 
 startTrainIndex = 0
 endTrainIndex = len(procDataTrainHandcraftedHR.dataArray)
 
 trainDataset = procDataTrainHandcraftedHR.dataArray[startTrainIndex:endTrainIndex]
+trainDatasetLabels = procDataTrainHandcraftedHR.labels[startTrainIndex:endTrainIndex]
 
-clf = svm.SVC()
-experimentClassifier(clf, trainDataset, procDataTrainHandcraftedHR.labels[startTrainIndex:endTrainIndex])
 
+#clf = tree.DecisionTreeClassifier(class_weight=[{0: 1, 1: 5}, {0: 1, 1: 5}, {0: 1, 1: 1}, {0: 1, 1: 1}, {0: 1, 1: 1}, {0: 1, 1: 1}, {0: 1, 1: 1}, {0: 1, 1: 0}])
+#clf = tree.DecisionTreeClassifier(class_weight={0: 3, 1: 3, 2: 2,3: 5, 4: 0,5: 0, 6: 0,7: 0})
+#clf = RandomForestClassifier(random_state=0,class_weight={0: 3, 1: 1, 2: 4,3: 1, 4: 1,5: 0, 6: 1,7: 0},max_features='log2')
+
+clf = RandomForestClassifier( random_state=0,class_weight={0: 3, 1: 1, 2: 4.5,3: 1, 4: 1,5: 0, 6: 1,7: 0},max_features='log2')
+
+#experimentClassifier(clf, trainDataset, trainDatasetLabels, nrOfIters=5)
+
+
+startTrainIndex = 0
+endTrainIndex = len(procDataTrainHandcraftedHR.dataArray)
+
+### TESTING DATASET
+
+testDataset = procDataTestHandcraftedHR.dataArray[startTrainIndex:endTrainIndex]
+testDatasetLabels = procDataTestHandcraftedHR.labels[startTrainIndex:endTrainIndex]
+
+fitAndPredictClassifier(clf, trainDataset, trainDatasetLabels, testDataset, testDatasetLabels)
 
 
 
