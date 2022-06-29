@@ -33,7 +33,7 @@ from logger import Logger, FeatureLogger
 
 def discretizeHandCraftedDataset(processedHandTrainDataset):
     n_entries = len(processedHandTrainDataset.labels)
-    nOfFeatures=16
+    nOfFeatures=15
     dataset_features = np.zeros((n_entries, nOfFeatures))
     #Array positions
     # 0 - mean minute hr
@@ -67,9 +67,6 @@ def discretizeHandCraftedDataset(processedHandTrainDataset):
 
 
             np.nanmean([i[0] for i in processedHandTrainDataset.gsrFeatures[index_n_entries]]),
-            np.nanquantile([i[0] for i in processedHandTrainDataset.gsrFeatures[index_n_entries]],
-                           q=0.75) - np.nanquantile(
-                [i[2] for i in processedHandTrainDataset.gsrFeatures[index_n_entries]], q=0.25),
             # -0.009, covariance :-0.000
             ######## ST Features
             np.nanmean([i[8] for i in processedHandTrainDataset.gsrFeatures[index_n_entries]]),
@@ -192,8 +189,8 @@ FeatureLogger.logLabelCorrelation(trainDataset, trainDatasetLabels)
 #clf = tree.DecisionTreeClassifier(class_weight={0: 2, 1: 1, 2: 2, 3: 3}) #0.54
 
 #featureSelector =  NuSVC(kernel='linear', shrinking = True,cache_size=300, probability=True,max_iter=10000)
-featureSelector =  LinearSVC(dual = False, random_state = 42, penalty = 'l1',tol = 1e-06,  intercept_scaling = 1, loss = 'squared_hinge', max_iter = 60000,
-                             multi_class = 'crammer_singer',C = 0.65, class_weight = None,)
+featureSelector =  LinearSVC(dual = False, random_state = 42, penalty = 'l1',tol = 1e-05,  intercept_scaling = 1, loss = 'squared_hinge', max_iter = 60000,
+                             multi_class = 'crammer_singer',C = 0.7, class_weight = None,)
 #featureSelector = RandomForestClassifier()
 #featureSelector = KNeighborsClassifier(n_neighbors=12)
 

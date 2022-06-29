@@ -1,0 +1,71 @@
+Num Features: 2
+Selected Features: [ True False  True False False]
+Feature Ranking: [1 2 1 4 3]
+
+
+Ridge model:
+ Feature X0 - 1.525
+Feature X1 - 1.866
+Feature X2 - 0.533
+Feature X3 - 1.158
+Feature X4 - -1.046
+Optimal number of features : 3
+Best features : [0 1 4]
+
+
+Ridge model:
+ Feature X0 - 1.657
+Feature X1 - 2.258
+Feature X2 - -1.01
+      f0    f1    f2
+f0  1.00  0.42  0.02
+f1  0.42  1.00 -0.01
+f2  0.02 -0.01  1.00
+
+
+######################################
+####### PREDICTION METRICS INFO ######
+######################################
+
+accuracy : 0.5644171779141104
+recall : 0.647239263803681
+f1 score : 0.5614086615441461
+precision : 0.5662345201238389
+
+############### ERROR ###############
+mean squared error  : 0.43558282208588955
+median error  : 0.0
+max error  : 1
+
+
+
+######################################
+####### PREDICTION METRICS INFO ######
+######################################
+
+accuracy : 0.5567484662576687
+recall : 0.7116564417177914
+f1 score : 0.5458504758943657
+precision : 0.5627738745771533
+
+############### ERROR ###############
+mean squared error  : 0.4432515337423313
+median error  : 0.0
+max error  : 1
+
+
+
+######################################
+####### PREDICTION METRICS INFO ######
+######################################
+
+accuracy : 0.6119631901840491
+recall : 0.6349693251533742
+f1 score : 0.6117577004276512
+precision : 0.6122007336093012
+
+############### ERROR ###############
+mean squared error  : 0.3880368098159509
+median error  : 0.0
+max error  : 1
+

@@ -76,7 +76,7 @@ class FeatureLogger :
     @staticmethod
     def logLabelCorrelation(processedFeatures, labels):
         # Feature extraction
-        ridge = Ridge(alpha=0.0001)
+        ridge = Ridge(alpha=0.00001)
         ridge.fit(processedFeatures, labels)
         Ridge(alpha=1.0, copy_X=True, fit_intercept=True, max_iter=None,
               normalize=False, random_state=None, solver='auto', tol=0.001)

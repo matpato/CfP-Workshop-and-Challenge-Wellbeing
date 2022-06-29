@@ -19,9 +19,8 @@ class DatasetOperations:
                                gsrFeatures=handcraftedFeaturesDataset['GSR_features'][indexesToKeep],
                                labels=handcraftedFeaturesLabels[indexesToKeep])
 
-
     @staticmethod
-    def filterZerosHandCraftedFeatures(handcraftedFeaturesDataset, handcraftedFeaturesLabels, filterZeros=True):
+    def filterZerosHandCraftedFeatures(handcraftedFeaturesDataset, handcraftedFeaturesLabels, filterZeros=False):
 
         # retornar array com indexes a manter ? (Masi facil)
         indexesToRemove = []
@@ -30,11 +29,12 @@ class DatasetOperations:
             if "masking" not in key: continue
             if not filterZeros: continue
             for i in range(len(handcraftedFeaturesDataset[key])):
-                if np.min(handcraftedFeaturesDataset[key][i]) == 0:
+                if np.count_nonzero(handcraftedFeaturesDataset[key][i]) < (
+                        len(handcraftedFeaturesDataset[key][i]) * 0.5):
                     indexesToRemove.append(i)
 
-        indexesToKeep = range(len(handcraftedFeaturesLabels))
-        # else: indexesToKeep = np.delete(range(len(handcraftedFeaturesLabels)), np.unique(indexesToRemove))
+        if not filterZeros: indexesToKeep = range(len(handcraftedFeaturesLabels))
+        else: indexesToKeep = np.delete(range(len(handcraftedFeaturesLabels)), np.unique(indexesToRemove))
 
         return FilteredDataset(ecgFeatures=handcraftedFeaturesDataset['ECG_features'][indexesToKeep],
                                gsrFeatures=handcraftedFeaturesDataset['GSR_features'][indexesToKeep],
